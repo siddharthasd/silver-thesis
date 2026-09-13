@@ -785,6 +785,132 @@
   /* Hide on non-timeline tabs */
   .fab-today.hidden { opacity: 0; pointer-events: none; }
 
+  /* Thesis tab */
+  .thesis-page { max-width: 960px; margin: 0 auto; padding: var(--space-lg) var(--space-md); }
+
+  .thesis-lede {
+    background: var(--color-primary-dark);
+    color: #fff;
+    border-radius: 8px;
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-lg);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.65;
+  }
+  .thesis-lede span { opacity: 0.75; font-size: 12px; font-weight: 400; display: block; margin-top: 6px; }
+
+  .thesis-section { margin-bottom: var(--space-lg); }
+  .thesis-section-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .thesis-callout {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    border-left: 4px solid;
+  }
+  .thesis-callout.bull  { background: var(--color-success-bg);  border-left-color: var(--color-success);  color: #1a4d2e; }
+  .thesis-callout.warn  { background: var(--color-warning-bg);  border-left-color: var(--color-warning);  color: #7c3a00; }
+  .thesis-callout.risk  { background: var(--color-error-bg);    border-left-color: var(--color-error);    color: #7c1b1b; }
+  .thesis-callout.info  { background: var(--color-secondary-light); border-left-color: var(--color-secondary); color: var(--color-secondary-dark); }
+  .thesis-callout strong { font-weight: 700; }
+
+  .thesis-driver-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-sm);
+  }
+  .thesis-driver {
+    background: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    padding: 12px 14px;
+    border-left: 4px solid var(--color-border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .thesis-driver.active   { border-left-color: var(--color-success); }
+  .thesis-driver.watch    { border-left-color: var(--color-warning); }
+  .thesis-driver.risk     { border-left-color: var(--color-error); }
+  .thesis-driver-num {
+    font-size: 11px; font-weight: 700;
+    background: var(--color-neutral-bg);
+    color: var(--color-text-muted);
+    border-radius: 4px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    letter-spacing: 0.04em;
+  }
+  .thesis-driver-body { flex: 1; }
+  .thesis-driver-name {
+    font-size: 13px; font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 3px;
+  }
+  .thesis-driver-detail { font-size: 12px; color: var(--color-text-muted); line-height: 1.5; }
+  .thesis-driver-badge {
+    display: inline-block;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 2px 7px; border-radius: 10px;
+    margin-bottom: 4px;
+  }
+  .badge-active  { background: var(--color-success-bg);  color: var(--color-success); }
+  .badge-watch   { background: var(--color-warning-bg);  color: var(--color-warning); }
+  .badge-risk    { background: var(--color-error-bg);    color: var(--color-error); }
+
+  .thesis-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+  @media (max-width: 640px) { .thesis-two-col { grid-template-columns: 1fr; } }
+
+  .thesis-card {
+    background: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    padding: var(--space-sm) var(--space-md);
+  }
+  .thesis-card h4 {
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .thesis-card ul { padding-left: 18px; }
+  .thesis-card li { font-size: 12px; color: var(--color-text); line-height: 1.7; }
+  .thesis-card li + li { margin-top: 2px; }
+
+  .thesis-exit {
+    background: var(--color-primary-dark);
+    color: #fff;
+    border-radius: 8px;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+  .thesis-exit-item { text-align: center; }
+  .thesis-exit-item .exit-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.65; display: block; margin-bottom: 4px; }
+  .thesis-exit-item .exit-val   { font-size: 22px; font-weight: 800; line-height: 1; }
+  .thesis-exit-item .exit-note  { font-size: 11px; opacity: 0.65; margin-top: 3px; }
+  .thesis-exit-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.25); flex-shrink: 0; }
+
   /* Central Bank Bullion Holdings tab */
   .cb-page { max-width: 1100px; margin: 0 auto; padding: var(--space-lg) var(--space-md); }
   .cb-section {
@@ -1133,7 +1259,8 @@
 
 <!-- Tab navigation -->
 <div class="page-tabs">
-  <button class="page-tab-btn active" onclick="switchPageTab('timeline', this)">Timeline</button>
+  <button class="page-tab-btn active" onclick="switchPageTab('thesis', this)">Thesis</button>
+  <button class="page-tab-btn" onclick="switchPageTab('timeline', this)">Timeline</button>
   <button class="page-tab-btn" onclick="switchPageTab('marketdata', this)">Market Data</button>
   <button class="page-tab-btn" onclick="switchPageTab('ust', this)">US Treasury Data</button>
   <button class="page-tab-btn" onclick="switchPageTab('india', this)">India Policies</button>
@@ -1141,8 +1268,201 @@
   <button class="page-tab-btn" onclick="switchPageTab('cb', this)">Central Bank Bullion Holdings</button>
 </div>
 
+<!-- THESIS TAB -->
+<div class="page-tab-panel active" id="tab-thesis">
+<div class="thesis-page">
+
+  <!-- Lede -->
+  <div class="thesis-lede">
+    Silver is in a structural multi-year bull market driven by nine simultaneous and mutually reinforcing forces — a once-in-a-generation convergence of monetary stress, industrial demand step-changes, and physical supply constraints.
+    <span>Framework: Nine Driver Model &bull; Horizon: 2026 – 2034 &bull; Last reviewed: Sep 2026</span>
+  </div>
+
+  <!-- Core argument -->
+  <div class="thesis-section">
+    <div class="thesis-section-title">Core Argument</div>
+    <div class="thesis-callout bull">
+      <strong>Demand is structurally non-discretionary.</strong> The energy transition (solar PV) and defence/electronics spending lock in silver consumption regardless of economic cycle. Supply cannot respond — primary silver mines operate at multi-decade-low margins and lead times are 7–10 years. The resulting deficit is structural, not cyclical.
+    </div>
+    <div class="thesis-callout info">
+      <strong>Monetary overlay amplifies the move.</strong> Real interest rates are likely to turn negative again as debt-service costs crowd out fiscal flexibility. Central banks are diversifying out of Treasuries into hard assets. Silver benefits from both the industrial scarcity story and the monetary hedge narrative simultaneously — gold's move typically precedes silver's by 6–18 months.
+    </div>
+    <div class="thesis-callout warn">
+      <strong>The COMEX/SHFE squeeze is the near-term ignition.</strong> Registered inventories on COMEX (~86 Moz) and deliverable stocks on SHFE (~868t) are at historically tight levels. A delivery demand spike — whether from industrial off-take, ETF inflows, or arbitrage — could trigger a price dislocation that breaks above key resistance and resets sentiment.
+    </div>
+  </div>
+
+  <!-- Nine Drivers -->
+  <div class="thesis-section">
+    <div class="thesis-section-title">Nine Driver Framework — Status as of Sep 2026</div>
+    <div class="thesis-driver-grid">
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D1</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">COMEX Registered &amp; Eligible Drain</div>
+          <div class="thesis-driver-detail">~86 Moz registered — historically tight. Any surge in delivery demand risks a short-notice squeeze on physically-settled contracts.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D2</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">SHFE Critically Low Deliverable Stocks</div>
+          <div class="thesis-driver-detail">~868t on-warrant; sustained backwardation signals the market is already in physical tightness. Domestic Chinese industrial demand continues to drain the buffer.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D3</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">RBI Silver Collateral Monetisation</div>
+          <div class="thesis-driver-detail">Operative since 1 Apr 2026. India's import licensing via IIBX is releasing slowly (~90t Aug). Duty at 15%; a cut to 6% would trigger an estimated 500–800t import surge.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D4</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">ALMM-2 Solar Module Mandate</div>
+          <div class="thesis-driver-detail">Operative since 1 Jun 2026. Requires domestic silver-intensive solar cells in Indian projects. Net-metering/open-access exemption expires <strong>31 Dec 2026</strong> — a critical hold/extend decision.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver watch">
+        <div class="thesis-driver-num">D5</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-watch">Fading</div>
+          <div class="thesis-driver-name">Chinese VAT Rebate Removal on PV Exports</div>
+          <div class="thesis-driver-detail">Operative since 1 Apr 2026. Front-loading by Chinese exporters is complete; the acute demand pull-forward has passed but the structural export cost headwind remains.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D6</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">Mexican Supply Frictions</div>
+          <div class="thesis-driver-detail">Cartel disruption to Mexico's mining corridors (world's largest silver producer) is ongoing. No new greenfield supply response visible; incumbent operations face ongoing logistical risk.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D7</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Active</div>
+          <div class="thesis-driver-name">SEBI ETF/MF Valuation Circulars</div>
+          <div class="thesis-driver-detail">Operative since 1 Apr 2026. Standardised valuation rules support the MCX domestic silver premium (~$4/oz, peak $6.30). Deepens India's institutional silver demand base.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver watch">
+        <div class="thesis-driver-num">D8</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-watch">Watch</div>
+          <div class="thesis-driver-name">Geopolitical Risk Premium (Hormuz)</div>
+          <div class="thesis-driver-detail">Active but markets showing adaptation fatigue. Strait of Hormuz tension supports energy &amp; commodity risk premia; however, repeated non-escalation is gradually discounting the premium.</div>
+        </div>
+      </div>
+
+      <div class="thesis-driver active">
+        <div class="thesis-driver-num">D9</div>
+        <div class="thesis-driver-body">
+          <div class="thesis-driver-badge badge-active">Most Active</div>
+          <div class="thesis-driver-name">Stagflation / Monetary-System Stress</div>
+          <div class="thesis-driver-detail">Seven sub-threads active: Fed policy uncertainty (PCE 3.7%, Sep hike ~60%); Treasury auction demand deterioration; official foreign holders down from ~40% to ~12% of outstanding; net interest $1.0T FY2026 rising to $2.1T by 2036; DOGE savings reversed by reconciliation (+$4.7T CBO deficit); CB gold buying ~1,200t in 2025; dollar erosion gradual (trade invoicing still ~88% USD).</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Price structure + COT -->
+  <div class="thesis-section">
+    <div class="thesis-section-title">Price Structure &amp; Positioning</div>
+    <div class="thesis-two-col">
+      <div class="thesis-card">
+        <h4>Key Levels (Sep 2026)</h4>
+        <ul>
+          <li><strong>Structural support:</strong> ~$60 — close below threatens the recovery structure</li>
+          <li><strong>Post-Warsh support:</strong> $65.50 – 66</li>
+          <li><strong>July 2026 low:</strong> $55</li>
+          <li><strong>Aug 27 2026 high:</strong> ~$70</li>
+          <li><strong>Long-term target:</strong> $300/oz (thesis fulfilment)</li>
+        </ul>
+      </div>
+      <div class="thesis-card">
+        <h4>COT Positioning (week of 25 Aug)</h4>
+        <ul>
+          <li>Managed money net long: <strong>~14,073 contracts</strong></li>
+          <li>Well below the 40–50k+ caution threshold</li>
+          <li>Positioning is not crowded — material upside participation remains available</li>
+          <li>Warsh hawkish surprise (Jackson Hole Aug 28) reset sentiment; Sep FOMC hike ~60% probability</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bear case -->
+  <div class="thesis-section">
+    <div class="thesis-section-title">Bear Case &amp; Invalidation Conditions</div>
+    <div class="thesis-two-col">
+      <div class="thesis-card">
+        <h4>Thesis Risks</h4>
+        <ul>
+          <li>Fed achieves a genuine soft landing; real rates stay positive and fiscal credibility restores</li>
+          <li>Rapid solar silver-intensity reduction (thrifting or perovskite substitution scales faster than expected)</li>
+          <li>India duty reversal triggers a 500–800t import dump that temporarily overwhelms demand</li>
+          <li>ALMM-2 exemptions extended permanently, removing the domestic cell mandate</li>
+          <li>Managed money crowding above 40–50k net long contracts signals near-term exhaustion</li>
+          <li>Geopolitical de-escalation (Hormuz reopening, Ukraine ceasefire) reduces safe-haven bid</li>
+        </ul>
+      </div>
+      <div class="thesis-card">
+        <h4>Key Forward Milestones to Watch</h4>
+        <ul>
+          <li><strong>31 Dec 2026:</strong> ALMM net-metering / open-access exemption expiry — MNRE hold = all Indian solar categories lock into domestic silver-intensive cells</li>
+          <li><strong>Sep 2026 FOMC:</strong> Rate decision and dot-plot; hike would confirm stagflation path, supporting Driver 9</li>
+          <li><strong>India import licensing:</strong> IIBX monthly quota pace — acceleration signals demand re-ignition</li>
+          <li><strong>COMEX registered inventory:</strong> Any drop below 60 Moz raises acute squeeze risk</li>
+          <li><strong>Gold/silver ratio:</strong> Ratio compression is a lagging confirmer — watch for move below 65×</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exit discipline -->
+  <div class="thesis-section">
+    <div class="thesis-section-title">Exit Discipline</div>
+    <div class="thesis-exit">
+      <div class="thesis-exit-item">
+        <span class="exit-label">Price Target</span>
+        <div class="exit-val">$300<span style="font-size:14px;font-weight:500">/oz</span></div>
+        <div class="exit-note">Thesis fulfilment price</div>
+      </div>
+      <div class="thesis-exit-divider"></div>
+      <div class="thesis-exit-item">
+        <span class="exit-label">Time Horizon</span>
+        <div class="exit-val">2034</div>
+        <div class="exit-note">Hold to this year or price target, whichever comes first</div>
+      </div>
+      <div class="thesis-exit-divider"></div>
+      <div class="thesis-exit-item" style="flex:1;text-align:left;">
+        <span class="exit-label">Structural Close-below Invalidation</span>
+        <div style="font-size:13px;font-weight:600;margin-top:4px;">A monthly close below <strong>$60/oz</strong> without a macro catalyst would signal the recovery structure is broken and prompt a full thesis review. Dips within the structure are expected and not triggers for exit.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
 <!-- TIMELINE TAB -->
-<div class="page-tab-panel active" id="tab-timeline">
+<div class="page-tab-panel" id="tab-timeline">
 <div class="page-body">
 
   <!-- Legend -->
@@ -3724,7 +4044,7 @@
     var timelinePanel = document.getElementById('tab-timeline');
     if (!timelinePanel || !timelinePanel.classList.contains('active')) {
       // Switch to timeline first, then scroll
-      var timelineBtn = document.querySelector('.page-tab-btn:first-child');
+      var timelineBtn = document.querySelector('.page-tab-btn[onclick*="timeline"]');
       if (timelineBtn) {
         switchPageTab('timeline', timelineBtn);
       }
