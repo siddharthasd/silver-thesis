@@ -1,0 +1,27 @@
+﻿name: Sync to personal-website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - silver-thesis-key-milestones.html
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push HTML to personal-website repo
+        env:
+          TOKEN: ${{ secrets.PERSONAL_WEBSITE_TOKEN }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git clone https://x-access-token:${TOKEN}@github.com/siddharthasd/personal-website.git _target
+          cp silver-thesis-key-milestones.html _target/
+          cd _target
+          git add silver-thesis-key-milestones.html
+          git diff --staged --quiet && echo "No changes" && exit 0
+          git commit -m "sync: update silver-thesis-key-milestones.html"
+          git push
