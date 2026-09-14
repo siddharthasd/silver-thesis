@@ -1,0 +1,395 @@
+# Silver Thesis Dashboard — Fortnightly Update Prompt
+# Run this prompt in a single Claude Code session approximately every two weeks.
+# File: silver-thesis-key-milestones.html
+# Path: C:\Users\siddhartha.dhamankar\OneDrive - Accenture\Documents\Personal\content\personal\silver\
+# Git remote: https://github.com/siddharthasd/silver-thesis (branch: main)
+# CLAUDE.md in the project directory contains full architecture reference — read it first.
+
+---
+
+You are updating a personal silver investment research dashboard (single-file HTML, no build step).
+Work through each phase below in order, one section at a time. After completing each phase,
+commit and push to git before moving to the next phase. Do not batch phases.
+
+CONVENTIONS:
+- The MDS table is reversed: newest month is the FIRST data column (class="col-current"), oldest is last.
+- ~ prefix = estimated/unconfirmed. No prefix = confirmed from official source.
+- Always prefer official sources (central bank, exchange, government statistics) over aggregators.
+- For "last trading day" references: if the target date falls on a weekend, use the prior Friday.
+- Today's date is [INSERT DATE]. The reference date for this update is [INSERT LAST TRADING DAY].
+
+---
+
+## PHASE 0 — PREPARATION
+
+1. Read the file to understand its current state.
+2. Find the current col-current header: grep for `col-current th-current` or `th-current col-current`
+   in the thead rows of the Market Data table. Note which month/year it shows (e.g. "Sep 26").
+3. Determine update mode:
+   - SAME MONTH: If [INSERT LAST TRADING DAY] falls in the same month as col-current → update
+     existing col-current cells with more accurate data. Remove ~ from confirmed values.
+   - NEW MONTH: If [INSERT LAST TRADING DAY] is in a new month → add a new column as follows:
+
+   ADDING A NEW MONTH COLUMN (do this if new month):
+   a. In every <tr class="row-group"> row: increment colspan from 22 to 23.
+   b. In every thead <tr> that has the month headers:
+      - Remove class="col-current th-current" (or "th-current col-current") from the old Sep 26 <th>.
+      - Prepend a new <th class="col-current th-current">MMM YY†</th> as the first data header.
+   c. In every data row (<tr class="row-*">):
+      - Remove class="col-current" from the old col-current <td>.
+      - Prepend a new <td class="col-current">~</td> (placeholder) as the first data cell,
+        immediately after the label <td>. Fill with ~ until confirmed.
+   d. The col-divider column stays on Jan 26 (no change to its class or position).
+   e. After adding the new column structure, proceed to update the new col-current cells below.
+
+---
+
+## PHASE 1 — MARKET DATA TAB (tab id: marketdata)
+
+Work through each group in the Market Data Snapshot table. For each metric:
+- Search the specified official source for the value as of [INSERT LAST TRADING DAY].
+- Update the col-current <td> cell. Remove ~ if confirmed; keep ~ if estimated.
+- Do NOT change any other column's values unless you spot a clear error.
+
+### Group 1: FX & Rates
+
+**Rate Fragility Index (RFI)**
+Do not search externally — calculate from the formula embedded in the HTML comment block
+above the <!-- MARKET DATA TAB --> section. Formula:
+  RFI = -0.6816 + (0.0549 × JGB_10Y) + (0.1852 × UST_30Y)
+Bear-steepener bonus: add +0.04 to +0.06 when (UST_30Y > 5.0%) AND (UST_30Y − UST_10Y > 1.0%).
+Use the JGB 10Y and UST 30Y values you find below to compute. Round to 2 decimal places.
+
+**USD/JPY**
+Source: Federal Reserve H.10 Foreign Exchange Rates (federalreserve.gov/releases/h10).
+Target: daily spot rate for [INSERT LAST TRADING DAY]. Round to 1 decimal.
+
+**JGB 10Y yield (%)**
+Source: Bank of Japan (stat-search.boj.or.jp) or Ministry of Finance Japan (mof.go.jp).
+Target: 10-year JGB benchmark yield close on [INSERT LAST TRADING DAY]. Round to 2 decimal.
+
+**UST 30Y, UST 10Y, UST 3Y yields (%)**
+Source: Federal Reserve H.15 Selected Interest Rates (federalreserve.gov/releases/h15).
+Target: constant-maturity Treasury yields for [INSERT LAST TRADING DAY]. Round to 2 decimal.
+
+### Group 2: Silver & Gold
+
+**Silver COMEX ($/oz)**
+Source: CME Group (cmegroup.com) front-month silver futures close, or Investing.com historical.
+Target: front-month (SI) settlement on [INSERT LAST TRADING DAY]. Round to 1 decimal.
+
+**Silver Shanghai ($/oz)**
+Source: Shanghai Futures Exchange (shfe.com.cn) or CEIC. Convert CNY/kg to USD/oz:
+  USD/oz = (CNY/kg price) ÷ 32.15 ÷ USD/CNY spot rate.
+Mark as ~estimated if conversion uses approximate FX.
+
+**Gold COMEX ($/oz)**
+Source: CME Group front-month gold futures (GC) settlement. Round to nearest dollar.
+
+**Gold Shanghai ($/oz)**
+Source: Shanghai Gold Exchange (sge.com.cn) Au9999 spot close. Convert CNY/g to USD/oz:
+  USD/oz = (CNY/g) × 31.1035 ÷ USD/CNY spot rate. Mark ~ if estimated.
+
+**Gold/Silver Ratio**
+Calculate: Gold COMEX ÷ Silver COMEX. Round to nearest integer. Mark ~ if either input is estimated.
+
+**Silver net premium, Silver backwardation, Gold net premium, Gold backwardation**
+These are derived signals. If you cannot confirm current COMEX/SHFE basis data, retain existing values.
+Source: CME Group daily settlement reports for consecutive contract months.
+
+### Group 3: Inventories
+
+**COMEX Registered (moz)**
+Source: goldsilver.ai/metal-prices/comex-silver or thevaultreport.com.
+Target: registered (warranted, deliverable) silver in million troy ounces as of [INSERT LAST TRADING DAY].
+Confirmed if from a daily CME warehouse report; ~ otherwise.
+
+**SHFE Silver (moz)**
+Source: SHFE daily warrant stock report (shfe.com.cn/eng/reports/StatisticalData/DailyData/?query_params=dailystock)
+or CEIC China Warehouse Stock: Shanghai Futures Exchange: Silver.
+Target: total silver warrant stocks in tonnes. Convert: moz = tonnes × 32.15 (i.e. tonnes × 1000 kg/t × 32.15 oz/kg ÷ 1,000,000).
+Show result to 1 decimal place.
+
+### Group 4: Macro & Monetary
+
+**WTI Crude ($/bbl)**
+Source: CME/NYMEX front-month CL futures settlement, or EIA (eia.gov/dnav/pet/hist/LeafHandler.ashx).
+Round to nearest dollar.
+
+**DXY (USD Index)**
+Source: ICE U.S. Dollar Index via Investing.com historical data or TradingView.
+Round to 1 decimal.
+
+**US 10Y Real (TIPS %)**
+Source: Federal Reserve H.15 (DFII10) or FRED series DFII10.
+Target: 10-year Treasury Inflation-Indexed Constant Maturity yield. Round to 2 decimal.
+
+**US M2 ($tn)**
+Source: Federal Reserve H.6 Money Stock Measures (federalreserve.gov/releases/h6) or FRED M2SL.
+Target: most recent monthly/weekly M2 figure in $ trillions. Mark ~ if not yet the reference month.
+
+### Group 5: India
+
+**USD/INR**
+Source: Federal Reserve H.10 or RBI reference rate (rbi.org.in/scripts/ReferenceRateArchive.aspx).
+Round to 1 decimal.
+
+**India FX Reserves ($bn)**
+Source: RBI Weekly Statistical Supplement — Table 1 (rbi.org.in/scripts/WSSViewDetail.aspx).
+Target: total reserves (FCA + gold + SDR + IMF tranche) for the most recent weekly release.
+Round to 1 decimal.
+
+**MCX Silver (₹000/kg)**
+Source: MCX official (mcxindia.com) front-month silver futures daily settlement, or Goodreturns.in.
+Target: settlement price in ₹/kg. Divide by 1000 to get ₹000/kg. Round to nearest integer.
+
+### Group 6: Private Credit Stress — Early Warning Indicators
+
+**BDC sector Price/NAV (x)**
+Source: VanEck MVIS US Business Development Companies Index (vaneck.com/us/en/investments/bdc-income-etf-bizd/).
+Target: sector-level price-to-NAV ratio. If only ETF BIZD price available, calculate vs most recent reported NAV.
+Round to 2 decimal.
+
+**LSTA distress ratio (% loans <80¢)**
+Source: PitchBook LCD monthly leveraged loan default and distress report (pitchbook.com).
+Target: percentage of performing Morningstar LSTA US Leveraged Loan Index trading below 80 cents.
+Mark ~ if most recent available data is from prior month.
+
+**HY OAS — ICE BofA (bps)**
+Source: FRED series BAMLH0A0HYM2 (fred.stlouisfed.org/series/BAMLH0A0HYM2) or ConvexTrade.
+Target: ICE BofA US High Yield Index option-adjusted spread in basis points. Round to nearest integer.
+No ~ prefix if FRED data is available for the reference date.
+
+**Private-credit non-accruals (% of portfolio at cost)**
+Source: SEC EDGAR BDC 10-Q filings (most recent quarter), or Morningstar/PitchBook BDC aggregate.
+Target: aggregate non-accrual rate for top-10 BDCs as % of total debt at cost. Mark ~ (quarterly data).
+
+**Leveraged-loan default rate (%, trailing 12M)**
+Source: Fitch Ratings monthly leveraged loan default monitor, or S&P Global Ratings LCD.
+Target: trailing 12-month default rate. Mark ~ if most recent Fitch release is older than reference date.
+
+**HY distress ratio (% bonds trading >1000bps OAS)**
+Source: S&P U.S. High Yield Corporate Distressed Bond Index, or LCD/LSTA.
+Target: % of HY bonds with individual OAS > 1000bps. Mark ~ if estimated.
+
+**Avg leveraged loan bid (cents on $)**
+Source: LSTA/LCD weekly average bid data via PitchBook or Morningstar.
+Target: average bid price of Morningstar LSTA Leveraged Loan Index. Round to 1 decimal. Mark ~ if estimated.
+
+**CLO equity trailing 12M return (%)**
+Source: Palmer Square or Intex CLO equity data, or Morgan Stanley CLO research.
+Target: trailing 12-month return for CLO equity tranches. Mark ~ (typically quarterly lag). Round to nearest integer.
+
+Commit and push: "data([MMM-YY]): update Market Data Snapshot with [date] data"
+
+---
+
+## PHASE 2 — US TREASURY DATA TAB (tab id: ust)
+
+Read the current content of the US Treasury Data tab panel (id="ust").
+Identify all tables, charts, or data sections within it.
+For each table or section:
+1. Identify the metrics tracked (likely: UST yield curve, bid-to-cover ratios, auction demand, primary dealer share, foreign holdings, debt/GDP).
+2. Search official sources: TreasuryDirect.gov auction results, Fed H.15, FRED, Office of Debt Management Quarterly Refunding.
+3. Update the most recent data points. Add new rows or columns for months/quarters since last update.
+4. Update any narrative text describing the current state of treasury market conditions.
+
+Key sources:
+- Auction results: treasurydirect.gov/auctions/upcoming/ and /announcements-data-results/
+- Foreign holdings: Treasury International Capital (TIC) data: ticdata.treasury.gov
+- Bid-to-cover and primary dealer data: NY Fed (newyorkfed.org/markets/primarydealers)
+- Debt service math: CBO Monthly Budget Review (cbo.gov)
+- Buyback program: treasurydirect.gov/auctions/announcements-data-results/announcement-results-press-releases/
+
+Commit and push: "data([MMM-YY]): update US Treasury Data tab"
+
+---
+
+## PHASE 3 — INDIA POLICIES TAB (tab id: india)
+
+Read the current India Policies tab. It contains tabbed policy cards covering:
+1. Import duty structure (BCD + AIDC on silver)
+2. IIBX licensing and import quota
+3. ALMM-2 solar module mandate (operative Jun 2026)
+4. RBI Silver Collateral Monetisation Policy (operative Apr 2026)
+5. SEBI ETF/MF Valuation Circulars (operative Apr 2026)
+
+For each policy card, check for updates since the last dashboard update:
+
+**Import Duty (CBIC)**
+Source: Central Board of Indirect Taxes and Customs (cbic.gov.in). Search for recent notifications
+on customs duty rates for silver (HS code 7106). Check if BCD (currently 10%) or AIDC (currently 5%)
+have changed. Check effective date and gazette notification number.
+
+**IIBX Import Licensing**
+Source: India International Bullion Exchange (iibx.co.in) or DGFT notifications (dgft.gov.in).
+Track: volume of import licenses issued (tonnes per month), current domestic premium ($/oz),
+any new licensing circulars.
+
+**ALMM-2 Solar Mandate**
+Source: Ministry of New and Renewable Energy (mnre.gov.in), ALMM order notifications.
+Track: any updates to the approved list, exemption status for net-metering/open-access projects,
+progress toward Dec 31 2026 deadline for exemption expiry. Search for "ALMM List II" notifications.
+
+**RBI Silver Collateral Policy**
+Source: Reserve Bank of India (rbi.org.in). Search for circulars on silver as eligible collateral,
+any updates to loan-to-value ratios or implementation guidance.
+
+**SEBI ETF/MF Valuation**
+Source: SEBI (sebi.gov.in) circulars. Search for any amendments to the silver ETF/MF valuation
+circular from Apr 2026. Track AUM growth in silver ETFs/MFs (AMFI monthly data: amfiindia.com).
+
+For each policy: update the "Last Updated" date, current status badge (Active / Watch / Suspended),
+and any new detail text. Add a new event entry if a material change occurred.
+
+Commit and push: "data([MMM-YY]): update India Policies tab"
+
+---
+
+## PHASE 4 — SILVER DEMAND SUPPLY TAB (tab id: ds)
+
+Read the current Silver Demand Supply tab. It contains:
+- Annual supply/demand balance table (Moz, years 2021–2026E)
+- Regional demand breakdown
+- Mine supply data
+- Any derived metrics (deficit/surplus, silver recycling, industrial demand share)
+
+For each table section:
+1. Check if new annual or semi-annual data has been released since last update.
+2. Primary sources:
+   - The Silver Institute World Silver Survey (silverinstitute.org) — published annually in April/May.
+   - GFMS/Metals Focus supplementary data.
+   - CPM Group Silver Yearbook.
+   - Indian import data: DGCI&S (commerce.gov.in) or IIBX monthly volumes.
+   - ALMM solar silver demand: MNRE capacity additions × 20g Ag/W (silver-intensive) or 3g Ag/W (thin-film).
+3. Update 2025 estimates (2025E) with any revised consensus figures.
+4. Update 2026 estimates (2026E) based on the latest analyst forecasts.
+5. Update the deficit/surplus row. A deficit (demand > supply) is bullish for the thesis.
+6. Update any narrative or signal text describing the supply/demand picture.
+
+Commit and push: "data([MMM-YY]): update Silver Demand Supply tab"
+
+---
+
+## PHASE 5 — CENTRAL BANK BULLION HOLDINGS TAB (tab id: cb)
+
+Read the current Central Bank Bullion Holdings tab. It contains:
+- A table of official gold holdings by country/entity (tonnes, quarterly data Q1'24–Q2'26)
+- A separate silver holdings table (if present)
+
+For each table:
+1. Identify the most recent quarter shown (currently Q2 2026).
+2. If a new quarter has been published (e.g. Q3 2026 IMF data), add the new quarter column.
+3. Primary sources:
+   - IMF COFER and IFS data: imf.org/en/Data (International Financial Statistics)
+   - World Gold Council gold demand trends: gold.org/gold-supply-demand
+   - Individual CB announcements: search "[Country] central bank gold reserves [quarter] [year]"
+   - Key entities to check: China PBoC, Russia, India RBI, Turkey, Poland, Hungary, Singapore,
+     Czech Republic, Saudi Arabia, ECB, United States (Fort Knox unchanged).
+4. For each row: update the most recent quarter column with tonnes held. Mark ~ if preliminary.
+5. Add new rows for any central banks that made notable purchases/sales not yet in the table.
+6. Update the "Total (t)" column for each entity (this may be the most recent quarterly figure).
+7. Check World Gold Council data for Q-o-Q changes of note (purchases >5t are significant).
+
+Commit and push: "data([MMM-YY]): update Central Bank Bullion Holdings tab"
+
+---
+
+## PHASE 6 — TIMELINE TAB (tab id: timeline)
+
+Read the Timeline tab. It contains month-blocks with event entries, each with a status pill:
+- status-confirmed (green): event has occurred
+- status-projected (amber): event is expected
+- status-watch (blue): event being monitored
+
+Work through the timeline from the most recent month-block backwards to 3 months prior:
+
+### 6a. Update existing milestone statuses
+For each event in the last 3 months with status-projected or status-watch:
+1. Search for whether the event has now occurred or been confirmed.
+2. If confirmed: change the status pill to status-confirmed, add class="completed" to the event div
+   and the dot element, update the event-detail text with actual outcome and date.
+3. If the event was watch and nothing has changed: leave as-is.
+4. If the event has been cancelled or superseded: update detail text accordingly.
+
+Key projected events to check (search each):
+- FOMC meetings: federalreserve.gov/monetarypolicy/fomccalendars.htm
+- BOJ policy decisions: boj.or.jp
+- Treasury quarterly refunding: treasurydirect.gov
+- ALMM Dec 31 2026 exemption deadline: mnre.gov.in
+- BDC Q3 2026 filings (expected Oct–Nov 2026): SEC EDGAR
+- India duty review / IIBX licensing updates: cbic.gov.in, dgft.gov.in
+- Any SEBI or RBI circulars: sebi.gov.in, rbi.org.in
+
+### 6b. Add new milestone events
+Search for significant events since the last update date that fit any of these categories:
+(Category classes: fed, boj, credit, cb, price, india, macro, catalyst, duty, almm)
+
+Search queries to run (one at a time):
+- "Federal Reserve FOMC [month year] decision rate"
+- "Bank of Japan policy decision [month year]"
+- "US Treasury auction [month year] bid-to-cover"
+- "COMEX silver inventory [month year]"
+- "India silver import duty [month year]"
+- "ALMM solar mandate [month year] update"
+- "RBI gold silver reserves [month year]"
+- "China PBoC gold reserves [month year]"
+- "Silver price [month year] technical level"
+- "Private credit BDC nonaccrual [month year]"
+- "US CPI PCE inflation [month year]"
+- "Treasury buyback program [month year]"
+
+For each significant event found:
+1. Find the correct month-block (or create one if it doesn't exist).
+2. Add a new <div class="event event--{category}"> block following the template of existing events.
+3. Set the appropriate status pill (confirmed if occurred, projected if upcoming, watch if uncertain).
+4. Write a concise title (≤12 words), a detail paragraph (2–4 sentences with specific data),
+   and a signal line describing what it means for the silver thesis (bull/bear/neutral).
+5. If the event confirms or stress-tests one of the nine drivers, note which driver in the signal.
+
+Commit and push: "timeline([MMM-YY]): update milestone statuses and add [N] new events"
+
+---
+
+## PHASE 7 — THESIS TAB (tab id: thesis)
+
+Read the current Thesis tab content. It summarises the nine-driver silver bull case.
+Based on all the updates made in Phases 1–6, assess which drivers have strengthened,
+weakened, or changed character. Then update the Thesis tab as follows:
+
+1. **Driver status bullets**: For each of the nine drivers, update the status descriptor
+   (e.g. "Active — accelerating", "Active — plateauing", "Watch — risk of reversal").
+   Base this strictly on data found in Phases 1–6; do not add opinion beyond what the data shows.
+
+2. **Rate Fragility Index callout**: Update the RFI value and its interpretation
+   (use the value calculated in Phase 1).
+
+3. **Key price levels callout**: Update with the current Silver COMEX price (Phase 1),
+   the most recent swing high/low, and any structural support/resistance levels from the Timeline.
+
+4. **Gold/Silver ratio callout**: Update with current ratio (Phase 1).
+   Note whether it is compressing (bullish) or expanding (bearish) vs the prior period.
+
+5. **COT positioning note**: Search for the most recent CFTC Commitment of Traders report
+   for COMEX silver (cftc.gov/MarketReports/CommitmentsofTraders/index.htm).
+   Update managed-money net long position. Note if approaching the 40–50k caution threshold.
+
+6. **Exit discipline**: Do not change "hold to 2034 or $300/oz" unless explicitly instructed.
+
+7. **Thesis integrity check**: Re-read the full Thesis tab and confirm it is internally consistent
+   with the Market Data and Timeline updates made in this session. Fix any stale numbers.
+
+Commit and push: "thesis([MMM-YY]): update thesis tab with [MMM-YY] data"
+
+---
+
+## FINAL STEP
+
+Run: git log --oneline -10
+Confirm all phase commits are present and pushed to origin/main.
+Report a summary of:
+- What month column was updated (or added)
+- Which metrics moved materially (>5% change from prior period)
+- Which driver statuses changed
+- How many new timeline events were added
+- Any data that could not be confirmed from official sources (still marked ~)
