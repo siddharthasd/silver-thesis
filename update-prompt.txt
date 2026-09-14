@@ -164,9 +164,11 @@ No ~ prefix if FRED data is available for the reference date.
 Source: SEC EDGAR BDC 10-Q filings (most recent quarter), or Morningstar/PitchBook BDC aggregate.
 Target: aggregate non-accrual rate for top-10 BDCs as % of total debt at cost. Mark ~ (quarterly data).
 
-**Leveraged-loan default rate (%, trailing 12M)**
-Source: Fitch Ratings monthly leveraged loan default monitor, or S&P Global Ratings LCD.
-Target: trailing 12-month default rate. Mark ~ if most recent Fitch release is older than reference date.
+**Leveraged-loan dual-track default rate (%, T12M)**
+Source: PitchBook LCD Monthly Default Report (primary). Dual-track = payment defaults + distressed LMEs.
+Target: trailing 12-month dual-track default rate. Confirmed Aug 2026: payment-only 0.87%, dual-track ~2.87%.
+Do NOT use Fitch all-inclusive rate (broader LME definition, reported ~6% for 2025 — different methodology).
+Mark ~ since monthly data typically released with a 2–4 week lag.
 
 **HY distress ratio (% bonds trading >1000bps OAS)**
 Source: S&P U.S. High Yield Corporate Distressed Bond Index, or LCD/LSTA.
