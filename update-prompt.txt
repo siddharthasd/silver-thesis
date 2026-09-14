@@ -46,7 +46,18 @@ CONVENTIONS:
 
 ## PHASE 1 — MARKET DATA TAB (tab id: marketdata)
 
+IMPORTANT — INLINE COMMENTS ARE THE AUTHORITATIVE GUIDE FOR EACH METRIC:
+Each metric row in the HTML is preceded by a <!-- METRIC: ... --> comment block containing:
+  Source : the exact official source URL and publication to use
+  Format : units, decimal places, and ~ convention
+  Dir    : what direction is bullish/bearish and what the warn/alarm thresholds are
+  Notes  : critical caveats (conversion formulas, what NOT to use, etc.)
+
+Before updating each metric, read its inline comment. The instructions below are a summary;
+the inline comment wins if there is any discrepancy. Grep for "<!-- METRIC:" to navigate to them.
+
 Work through each group in the Market Data Snapshot table. For each metric:
+- Read the inline <!-- METRIC: --> comment immediately above that metric's <tr>.
 - Search the specified official source for the value as of [INSERT LAST TRADING DAY].
 - Update the col-current <td> cell. Remove ~ if confirmed; keep ~ if estimated.
 - Do NOT change any other column's values unless you spot a clear error.
@@ -54,133 +65,98 @@ Work through each group in the Market Data Snapshot table. For each metric:
 ### Group 1: FX & Rates
 
 **Rate Fragility Index (RFI)**
-Do not search externally — calculate from the formula embedded in the HTML comment block
-above the <!-- MARKET DATA TAB --> section. Formula:
-  RFI = -0.6816 + (0.0549 × JGB_10Y) + (0.1852 × UST_30Y)
-Bear-steepener bonus: add +0.04 to +0.06 when (UST_30Y > 5.0%) AND (UST_30Y − UST_10Y > 1.0%).
-Use the JGB 10Y and UST 30Y values you find below to compute. Round to 2 decimal places.
+NEVER search externally. Formula: RFI = −0.6816 + (0.0549 × JGB_10Y) + (0.1852 × UST_30Y).
+Bear-steepener bonus: add +0.04–0.06 ONLY when BOTH (UST_30Y > 5.0%) AND (30Y − 10Y > 1.0%).
+Use the JGB 10Y and UST 30Y values confirmed in this same update. Round to 2 decimal places.
 
-**USD/JPY**
-Source: Federal Reserve H.10 Foreign Exchange Rates (federalreserve.gov/releases/h10).
-Target: daily spot rate for [INSERT LAST TRADING DAY]. Round to 1 decimal.
-
-**JGB 10Y yield (%)**
-Source: Bank of Japan (stat-search.boj.or.jp) or Ministry of Finance Japan (mof.go.jp).
-Target: 10-year JGB benchmark yield close on [INSERT LAST TRADING DAY]. Round to 2 decimal.
-
-**UST 30Y, UST 10Y, UST 3Y yields (%)**
-Source: Federal Reserve H.15 Selected Interest Rates (federalreserve.gov/releases/h15).
-Target: constant-maturity Treasury yields for [INSERT LAST TRADING DAY]. Round to 2 decimal.
+**USD/JPY** — Fed H.10 (federalreserve.gov/releases/h10). Daily rate for [INSERT LAST TRADING DAY]. 1 decimal.
+**JGB 10Y (%)** — Bank of Japan (stat-search.boj.or.jp) or MOF Japan. 2 decimal. Confirm BEFORE computing RFI.
+**UST 30Y / 10Y / 3Y (%)** — Fed H.15 (federalreserve.gov/releases/h15). 2 decimal.
 
 ### Group 2: Silver & Gold
 
-**Silver COMEX ($/oz)**
-Source: CME Group (cmegroup.com) front-month silver futures close, or Investing.com historical.
-Target: front-month (SI) settlement on [INSERT LAST TRADING DAY]. Round to 1 decimal.
+**Silver COMEX ($/oz)** — CME Group front-month SI settlement. Round to 1 decimal.
+**Silver Shanghai ($/oz)** — SHFE CNY/kg ÷ 32.15 ÷ USD/CNY. Always mark ~.
+**Gold COMEX ($/oz)** — CME Group front-month GC settlement. Round to nearest integer.
+**Gold Shanghai ($/oz)** — SGE Au9999 CNY/g × 31.1035 ÷ USD/CNY. Always mark ~.
+**Gold/Silver Ratio** — CALCULATED: Gold COMEX ÷ Silver COMEX. Round to nearest integer. Mark ~ if either input is ~.
 
-**Silver Shanghai ($/oz)**
-Source: Shanghai Futures Exchange (shfe.com.cn) or CEIC. Convert CNY/kg to USD/oz:
-  USD/oz = (CNY/kg price) ÷ 32.15 ÷ USD/CNY spot rate.
-Mark as ~estimated if conversion uses approximate FX.
-
-**Gold COMEX ($/oz)**
-Source: CME Group front-month gold futures (GC) settlement. Round to nearest dollar.
-
-**Gold Shanghai ($/oz)**
-Source: Shanghai Gold Exchange (sge.com.cn) Au9999 spot close. Convert CNY/g to USD/oz:
-  USD/oz = (CNY/g) × 31.1035 ÷ USD/CNY spot rate. Mark ~ if estimated.
-
-**Gold/Silver Ratio**
-Calculate: Gold COMEX ÷ Silver COMEX. Round to nearest integer. Mark ~ if either input is estimated.
-
-**Silver net premium, Silver backwardation, Gold net premium, Gold backwardation**
-These are derived signals. If you cannot confirm current COMEX/SHFE basis data, retain existing values.
-Source: CME Group daily settlement reports for consecutive contract months.
+**Silver net premium / Gold net premium** — CALCULATED: ((Shanghai − COMEX) ÷ COMEX) × 100. Always mark ~.
+**Silver backwardation / Gold backwardation** — CME front-month minus 3-month settlement.
+  Values: "yes" (>15¢), "mild" (1–15¢), "—" (contango). Classes: sig-stress / sig-mild / sig-none.
 
 ### Group 3: Inventories
 
 **COMEX Registered (moz)**
-Source: goldsilver.ai/metal-prices/comex-silver or thevaultreport.com.
-Target: registered (warranted, deliverable) silver in million troy ounces as of [INSERT LAST TRADING DAY].
-Confirmed if from a daily CME warehouse report; ~ otherwise.
+Source: goldsilver.ai or thevaultreport.com (daily CME warehouse report). Round to 1 decimal.
+WARN < 100 moz. ALARM < 80 moz. Also update this value in the DS tab Exchange Inventories table independently.
 
 **SHFE Silver (moz)**
-Source: SHFE daily warrant stock report (shfe.com.cn/eng/reports/StatisticalData/DailyData/?query_params=dailystock)
-or CEIC China Warehouse Stock: Shanghai Futures Exchange: Silver.
-Target: total silver warrant stocks in tonnes. Convert: moz = tonnes × 32.15 (i.e. tonnes × 1000 kg/t × 32.15 oz/kg ÷ 1,000,000).
-Show result to 1 decimal place.
+Source: SHFE daily warrant stock report (shfe.com.cn) or CEIC.
+Convert: moz = tonnes × 0.03215 (= tonnes × 1000 × 32.15 ÷ 1,000,000). Round to 1 decimal.
+WARN < 35 moz. ALARM < 28 moz. Also update in DS tab independently.
 
 ### Group 4: Macro & Monetary
 
-**WTI Crude ($/bbl)**
-Source: CME/NYMEX front-month CL futures settlement, or EIA (eia.gov/dnav/pet/hist/LeafHandler.ashx).
-Round to nearest dollar.
-
-**DXY (USD Index)**
-Source: ICE U.S. Dollar Index via Investing.com historical data or TradingView.
-Round to 1 decimal.
-
-**US 10Y Real (TIPS %)**
-Source: Federal Reserve H.15 (DFII10) or FRED series DFII10.
-Target: 10-year Treasury Inflation-Indexed Constant Maturity yield. Round to 2 decimal.
-
-**US M2 ($tn)**
-Source: Federal Reserve H.6 Money Stock Measures (federalreserve.gov/releases/h6) or FRED M2SL.
-Target: most recent monthly/weekly M2 figure in $ trillions. Mark ~ if not yet the reference month.
+**WTI Crude ($/bbl)** — CME/NYMEX CL front-month settlement or EIA. Round to nearest integer.
+**DXY (USD Index)** — ICE US Dollar Index via Investing.com or TradingView. Round to 1 decimal.
+**US 10Y Real (TIPS %)** — FRED DFII10 or Fed H.15. Round to 2 decimal.
+**US M2 ($tn)** — Fed H.6 / FRED M2SL. Round to 2 decimal. Mark ~ if reference month not yet published.
 
 ### Group 5: India
 
-**USD/INR**
-Source: Federal Reserve H.10 or RBI reference rate (rbi.org.in/scripts/ReferenceRateArchive.aspx).
-Round to 1 decimal.
-
-**India FX Reserves ($bn)**
-Source: RBI Weekly Statistical Supplement — Table 1 (rbi.org.in/scripts/WSSViewDetail.aspx).
-Target: total reserves (FCA + gold + SDR + IMF tranche) for the most recent weekly release.
-Round to 1 decimal.
-
-**MCX Silver (₹000/kg)**
-Source: MCX official (mcxindia.com) front-month silver futures daily settlement, or Goodreturns.in.
-Target: settlement price in ₹/kg. Divide by 1000 to get ₹000/kg. Round to nearest integer.
+**USD/INR** — RBI Reference Rate (rbi.org.in/scripts/ReferenceRateArchive.aspx) or Fed H.10. Round to 1 decimal.
+**India FX Reserves ($bn)** — RBI Weekly Statistical Supplement Table 1 (total: FCA + gold + SDR + IMF tranche). Round to 1 decimal.
+**MCX Silver (₹000/kg)** — MCX front-month settlement (mcxindia.com) or Goodreturns.in. ₹/kg ÷ 1000. Round to nearest integer.
 
 ### Group 6: Private Credit Stress — Early Warning Indicators
 
-**BDC sector Price/NAV (x)**
-Source: VanEck MVIS US Business Development Companies Index (vaneck.com/us/en/investments/bdc-income-etf-bizd/).
-Target: sector-level price-to-NAV ratio. If only ETF BIZD price available, calculate vs most recent reported NAV.
-Round to 2 decimal.
+Read each metric's inline <!-- METRIC: --> comment for exact source, thresholds, and critical notes.
+Threshold colour classes: pc-warn (warning), pc-stress (alarm). Apply them to the <td> contents when thresholds are breached.
 
-**LSTA distress ratio (% loans <80¢)**
-Source: PitchBook LCD monthly leveraged loan default and distress report (pitchbook.com).
-Target: percentage of performing Morningstar LSTA US Leveraged Loan Index trading below 80 cents.
-Mark ~ if most recent available data is from prior month.
-
-**HY OAS — ICE BofA (bps)**
-Source: FRED series BAMLH0A0HYM2 (fred.stlouisfed.org/series/BAMLH0A0HYM2) or ConvexTrade.
-Target: ICE BofA US High Yield Index option-adjusted spread in basis points. Round to nearest integer.
-No ~ prefix if FRED data is available for the reference date.
-
-**Private-credit non-accruals (% of portfolio at cost)**
-Source: SEC EDGAR BDC 10-Q filings (most recent quarter), or Morningstar/PitchBook BDC aggregate.
-Target: aggregate non-accrual rate for top-10 BDCs as % of total debt at cost. Mark ~ (quarterly data).
+**BDC sector Price/NAV (x)** — VanEck BIZD ETF vs reported NAV (vaneck.com). WARN < 0.85x. ALARM < 0.80x. Round to 2 decimal.
+**LSTA distress ratio (% loans <80¢)** — PitchBook LCD (pitchbook.com). WARN > 5%. ALARM > 7%.
+**HY OAS — ICE BofA (bps)** — FRED BAMLH0A0HYM2. WARN > 400bps. ALARM > 600bps. Round to nearest integer.
+**Private-credit non-accruals (% at cost)**
+Read the inline <!-- METRIC: Private-credit non-accruals --> comment for full step-by-step instructions.
+Calculation: weighted average of quarterly 10-Q non-accrual disclosures across four BDCs:
+  ARCC (38% weight) + FSK (25%) + OBDC (24%) + GBDC (13%)
+  = Σ(BDC_i non-accrual% at cost × weight_i). Round to 1 decimal.
+!! NEVER estimate from ARCC alone — FSK runs ~6–8% at cost and pulls the weighted average above 2% !!
+Filing lookup: SEC EDGAR → company name → 10-Q → search text for "non-accrual" → extract % at cost.
+Filing schedule: Q1 ~May 15 | Q2 ~Aug 15 | Q3 ~Nov 15 | Q4 ~Feb 15.
+Between filings: carry forward the prior quarter's value UNCHANGED (no linear interpolation).
+Alternative: PitchBook LCD BDC Monitor or Lincoln International Semi-Annual BDC Report.
+WARN > 2%. ALARM > 3%. Always mark ~.
 
 **Leveraged-loan dual-track default rate (%, T12M)**
-Source: PitchBook LCD Monthly Default Report (primary). Dual-track = payment defaults + distressed LMEs.
-Target: trailing 12-month dual-track default rate. Confirmed Aug 2026: payment-only 0.87%, dual-track ~2.87%.
-Do NOT use Fitch all-inclusive rate (broader LME definition, reported ~6% for 2025 — different methodology).
-Mark ~ since monthly data typically released with a 2–4 week lag.
+Source: PitchBook LCD Monthly Default Report — DUAL-TRACK methodology only.
+!! DO NOT use Fitch all-inclusive rate (reports ~6% for 2025 — different, broader LME definition) !!
+Three measures exist: (1) payment-only ~0.87% Aug 2026; (2) dual-track ~2.87% Aug 2026 ← USE THIS;
+(3) Fitch all-inclusive ~6% ← DO NOT USE. WARN > 3%. ALARM > 5%. Always mark ~.
 
-**HY distress ratio (% bonds trading >1000bps OAS)**
-Source: S&P U.S. High Yield Corporate Distressed Bond Index, or LCD/LSTA.
-Target: % of HY bonds with individual OAS > 1000bps. Mark ~ if estimated.
-
-**Avg leveraged loan bid (cents on $)**
-Source: LSTA/LCD weekly average bid data via PitchBook or Morningstar.
-Target: average bid price of Morningstar LSTA Leveraged Loan Index. Round to 1 decimal. Mark ~ if estimated.
-
-**CLO equity trailing 12M return (%)**
-Source: Palmer Square or Intex CLO equity data, or Morgan Stanley CLO research.
-Target: trailing 12-month return for CLO equity tranches. Mark ~ (typically quarterly lag). Round to nearest integer.
+**HY distress ratio (% bonds >1000bps OAS)** — S&P HY Distressed Bond Index or LCD. WARN > 8%. ALARM > 12%.
+**Avg leveraged loan bid (cents on $)** — PitchBook LCD / Morningstar LSTA index. WARN < 96¢. ALARM < 93¢. Round to 1 decimal.
+**CLO equity trailing 12M return (%)** — Palmer Square / Intex CLO data. WARN < 5%. ALARM < 0%. Always mark ~. Round to nearest integer.
+**Lev-loan refinancing volumes ($bn, monthly)** — PitchBook LCD monthly issuance report (refi-only). WARN < $20bn. ALARM < $10bn. Mark ~.
+**PIK toggle + amend-and-extend ($bn, monthly est.)**
+Read the inline <!-- METRIC: PIK toggle --> comment for full sourcing and construction methodology.
+No single authoritative public source — construct the estimate using this priority order:
+  (1) Octus (octus.com) — "Distressed A&E / LME Volume" tables (paywalled; most comprehensive)
+  (2) PitchBook LCD Default Monitor (pitchbook.com/lcd) — "LME Volume" section
+  (3) SEC EDGAR BDC 10-Q filings — manual tally of PIK elections + maturity extension $ amounts
+  (4) If none available: use the structured CONSTRUCT method in the inline comment.
+DISTRESSED transactions only — exclude routine repricings done by healthy borrowers.
+CONSTRUCT (fallback, when sources 1–3 unavailable):
+  - Start from prior month's value
+  - LSTA distress ratio rose >0.5pp → add ~$1–2bn; fell >0.5pp → subtract ~$1bn
+  - Major credit event (shock, market seizure) → add $3–5bn that month; decay over 2–3 months
+  - LSTA distress sustained >6% → floor at $10bn+
+  - Cross-check against dual-track default rate direction; flag divergences
+KNOWN ANCHORS (calibrate estimates near these months):
+  Apr 2025: ~$9bn (Liberation Day tariff shock) | Mar 2026: ~$13bn (LSTA peak 7.23%)
+!! NEVER build as a linear ramp — real A&E is event-driven and lumpy !!
+WARN > $5bn. ALARM > $8bn. Always mark ~.
 
 Commit and push: "data([MMM-YY]): update Market Data Snapshot with [date] data"
 
