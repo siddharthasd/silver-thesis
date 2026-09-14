@@ -73,6 +73,17 @@ Use the JGB 10Y and UST 30Y values confirmed in this same update. Round to 2 dec
 **JGB 10Y (%)** — Bank of Japan (stat-search.boj.or.jp) or MOF Japan. 2 decimal. Confirm BEFORE computing RFI.
 **UST 30Y / 10Y / 3Y (%)** — Fed H.15 (federalreserve.gov/releases/h15). 2 decimal.
 
+**Fed Funds Rate (%)**
+Read the inline <!-- METRIC: Fed Funds Rate --> comment for full sourcing details.
+Source: FOMC press release (federalreserve.gov/monetarypolicy/openmarket.htm) — issued same day as each decision.
+Report the UPPER BOUND of the FOMC target range (e.g., 3.50–3.75% → enter 3.75). Do NOT use EFFR.
+No ~ if sourced from a confirmed FOMC press release. Carry forward UNCHANGED between meetings.
+KNOWN ANCHORS: Jan 2025 = 4.50 | Jan 2026 = 3.75 (after 3 cuts: May 2025, Sep 2025, Jan 2026).
+WARN ≥ 4.50%. ALARM ≥ 5.00%.
+!! NEVER interpolate between FOMC meetings — rate is a step function, not a ramp !!
+Note: this row appears in BOTH the MDS table (row-fx) AND the UST tab Funding Pressure group.
+Update both cells from the same confirmed FOMC source.
+
 ### Group 2: Silver & Gold
 
 **Silver COMEX ($/oz)** — CME Group front-month SI settlement. Round to 1 decimal.
@@ -172,7 +183,16 @@ For each table or section:
 3. Update the most recent data points. Add new rows or columns for months/quarters since last update.
 4. Update any narrative text describing the current state of treasury market conditions.
 
+The UST tab Monthly Treasury Stress Metrics table has five row groups:
+  Debt Structure | Funding Pressure | Auction Stress 10Y | Auction Stress 30Y | Fiscal Consequence
+
+**Funding Pressure — Fed Funds Rate (upper bound %)**: first row in the Funding Pressure group.
+Source: FOMC press release (same as Phase 1). Upper bound of target range. No ~ if confirmed.
+Thresholds: watch-v class ≥ 4.50%; warn-v class ≥ 5.00%. Carry forward between meetings.
+Current anchor: 3.75% (Jul 29, 2026 hold confirmed); Sep 16–17, 2026 FOMC is live.
+
 Key sources:
+- Fed Funds Rate: federalreserve.gov/monetarypolicy/openmarket.htm (same source as Phase 1)
 - Auction results: treasurydirect.gov/auctions/upcoming/ and /announcements-data-results/
 - Foreign holdings: Treasury International Capital (TIC) data: ticdata.treasury.gov
 - Bid-to-cover and primary dealer data: NY Fed (newyorkfed.org/markets/primarydealers)
