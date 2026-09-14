@@ -248,24 +248,69 @@ Commit and push: "data([MMM-YY]): update India Policies tab"
 
 ## PHASE 4 — SILVER DEMAND SUPPLY TAB (tab id: ds)
 
-Read the current Silver Demand Supply tab. It contains:
-- Annual supply/demand balance table (Moz, years 2021–2026E)
-- Regional demand breakdown
-- Mine supply data
-- Any derived metrics (deficit/surplus, silver recycling, industrial demand share)
+Read the current Silver Demand Supply tab (id="tab-ds"). It has SEVEN distinct sections, each
+with its own data that must be updated independently. Work through them in order.
 
-For each table section:
-1. Check if new annual or semi-annual data has been released since last update.
-2. Primary sources:
-   - The Silver Institute World Silver Survey (silverinstitute.org) — published annually in April/May.
-   - GFMS/Metals Focus supplementary data.
-   - CPM Group Silver Yearbook.
-   - Indian import data: DGCI&S (commerce.gov.in) or IIBX monthly volumes.
-   - ALMM solar silver demand: MNRE capacity additions × 20g Ag/W (silver-intensive) or 3g Ag/W (thin-film).
-3. Update 2025 estimates (2025E) with any revised consensus figures.
-4. Update 2026 estimates (2026E) based on the latest analyst forecasts.
-5. Update the deficit/surplus row. A deficit (demand > supply) is bullish for the thesis.
-6. Update any narrative or signal text describing the supply/demand picture.
+IMPORTANT: The DS tab tracks the same COMEX/SHFE inventory figures as the MDS table in Phase 1,
+but in separate HTML cells — update BOTH when inventory data changes.
+
+### 4a. "As of" date
+Update the ds-signal-asof div: change the date to [INSERT LAST TRADING DAY].
+
+### 4b. Physical Stress Signal chain (ds-chain)
+Each ds-mrow shows a current value in ds-mval and a signal dot (ds-mdot class: ok / watch / warn).
+Update the ds-mval text for COMEX Registered, Reg/OI coverage, LBMA vault holdings, and SHFE
+deliverable to match Phase 1 confirmed values. Then update each ds-mdot class:
+- COMEX Registered: warn if <100 moz, alarm (warn class) if <80 moz, watch if 100–120, ok if >120
+- SHFE deliverable: alarm (warn class) if <28 moz, warn if <35 moz, ok if ≥35 moz
+- Update Stage badges (s-ok / s-watch / s-warn) on each ds-stage div based on the worst dot within it.
+
+### 4c. Exchange Inventories table (ds-table, id="ds-inventory")
+Monthly col-current update. Sources: CME Group, LBMA, SHFE (same as Phase 1 Group 3).
+Update col-current cells for:
+- COMEX Registered (moz): same value as Phase 1
+- COMEX Eligible (moz): goldsilver.ai total inventory minus COMEX registered
+- Registered / Eligible ratio: COMEX Registered ÷ COMEX Eligible (round to 2 dp); mark ~ if estimated
+- Reg / Open-Interest coverage (x): COMEX Registered ÷ (Open Interest × 5,000 oz ÷ 1,000,000)
+- LBMA vault holdings (moz): LBMA Monthly Statistics (lbma.org.uk); mark — if not yet published
+- SHFE deliverable silver (moz): same value as Phase 1; apply hi-v class if <28 moz, remove if ≥35 moz
+
+### 4d. Forward Curve & Lease Rates table (ds-table, id="ds-curve")
+Monthly col-current update.
+- 1M silver lease rate (%): jensendavid.substack.com, cruxinvestor.com, or CME implied. hi-v if >3%.
+- 3M silver lease rate (%): estimate as 1M minus 0.5–1.5% if not directly available. hi-v if >3%.
+- Spot–3M structure (¢/oz): CME COMEX front-month minus 3M contract settlement. Negative = backwardation.
+- EFP — COMEX minus LBMA spot (¢/oz): from CME EFP daily data or LBMA. Negative = London at premium.
+
+### 4e. Annual supply/demand balance table (ds-annual)
+Check for new annual data since last update.
+Primary sources:
+- Silver Institute World Silver Survey (silverinstitute.org) — published annually in April/May.
+  If WSS for the current year has been published since last update, replace the prior-year E column
+  with actuals and update the current-year E column with WSS forecasts.
+- GFMS/Metals Focus supplementary data; CPM Group Silver Yearbook.
+Update 2025E and 2026E rows with latest consensus figures if revised. Note: WSS is the authoritative
+source — prioritise it over all other estimates. Update the cumulative deficit milestone row.
+
+### 4f. COT & ETF Positioning table (ds-table, id="ds-positioning")
+Monthly col-current update.
+- COT managed money net long (k contracts): CFTC COT report (cftc.gov/MarketReports/CommitmentsofTraders).
+  Use most recent Friday snapshot. lo-v class if <5k (capitulation); hi-v if >45k (crowded).
+- COMEX silver open interest (k contracts): CME Group daily bulletin.
+- Total silver ETF holdings (Moz): iShares SLV + Sprott PSLV + Aberdeen ETFS combined.
+  Source: ETF provider daily holdings pages. hi-v if >720 Moz (near Jan 2026 rally peak).
+- PSLV premium / (discount) to NAV (%): sprott.com/investment-strategies/physical-silver/
+
+### 4g. Physical Demand Flow table (ds-table, id="ds-demand")
+Monthly col-current update.
+- US Mint silver coin sales (Moz): mint.gov monthly production figures (released ~10th of following month).
+- SGE silver delivery withdrawals (Moz): sge.com.cn monthly statistical report.
+- China silver imports HS-7106 (tonnes): China General Administration of Customs via OEC or tradingeconomics.com.
+- COMEX silver physical delivery (Moz): CME Group delivery notices for current active month.
+  Active delivery months are Mar, May, Jul, Sep, Dec — others will be low.
+- India total silver imports DGCI&S HS-7106 (tonnes): commerce.gov.in (~45–60 day publication lag).
+- IIBX channel (tonnes): iibx.co.in monthly volume data.
+- Non-IIBX channel: India total minus IIBX.
 
 Commit and push: "data([MMM-YY]): update Silver Demand Supply tab"
 
@@ -308,7 +353,11 @@ Work through the timeline from the most recent month-block backwards to 3 months
 For each event in the last 3 months with status-projected or status-watch:
 1. Search for whether the event has now occurred or been confirmed.
 2. If confirmed: change the status pill to status-confirmed, add class="completed" to the event div
-   and the dot element, update the event-detail text with actual outcome and date.
+   (e.g. <div class="event event--fed completed">), update the event-detail text with actual
+   outcome and date.
+   NOTE on the month-dot: the <div class="month-dot"> in the month-dot-col only gets class="completed"
+   when the ENTIRE month is in the past. For events in the current or upcoming month, only add
+   "completed" to the individual event div — leave the month-dot unchanged.
 3. If the event was watch and nothing has changed: leave as-is.
 4. If the event has been cancelled or superseded: update detail text accordingly.
 
@@ -385,6 +434,17 @@ Commit and push: "thesis([MMM-YY]): update thesis tab with [MMM-YY] data"
 
 ## FINAL STEP
 
+### Update CLAUDE.md
+Open CLAUDE.md in the project root. Update the Nine Driver Framework status table and all
+sub-sections to reflect the latest data from this session:
+- Update each driver's status column with current metric values and status descriptor
+- Update Driver 9 sub-threads with latest confirmed data
+- Update COT positioning note (latest confirmed CFTC week)
+- Update key price levels section with current COMEX silver, gold, G/S ratio
+- Update India import mechanics section with current IIBX volumes and premiums
+Commit and push: "docs([MMM-YY]): update CLAUDE.md driver statuses"
+
+### Verify all commits
 Run: git log --oneline -10
 Confirm all phase commits are present and pushed to origin/main.
 Report a summary of:
