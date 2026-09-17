@@ -348,6 +348,39 @@ Read the Timeline tab. It contains month-blocks with event entries, each with a 
 
 Work through the timeline from the most recent month-block backwards to 3 months prior:
 
+### 6-pre. Month-level structural maintenance (ALWAYS do this first)
+
+Before touching any event content, perform these four structural checks. Mistakes here break
+the "jump to today" FAB and cause events to disappear when users apply status filters.
+
+**A. `month-label current` class — MUST be on the current calendar month only.**
+Find: grep for `month-label current` in the HTML. There must be exactly one match.
+- If it's on a past month (e.g., Aug 2026 when today is Sep 17): REMOVE `current` from that month
+  and ADD `current` to the current month's `<div class="month-label">`.
+- Syntax: `<div class="month-label current">Sep 2026</div>` on the current month only.
+- The FAB "jump to today" button uses `document.querySelector('.month-label.current')` — wrong
+  placement makes it scroll to the wrong month.
+
+**B. `month-dot completed` class — past months only, NOT the current month.**
+Rule: `<div class="month-dot completed">` if the month is entirely in the past.
+       `<div class="month-dot">` if the month is the current or a future month.
+Check the last 2–3 month-blocks. Fix any that are missing `completed` (past month with bare dot),
+or incorrectly have `completed` (current month with completed dot).
+
+**C. Status pills on every event.**
+Every `<div class="event event--{category}">` must contain a status pill in its event-title:
+  `<span class="status-pill status-confirmed">Confirmed</span>`  — if event has occurred
+  `<span class="status-pill status-projected">Projected</span>` — if expected
+  `<span class="status-pill status-watch">Watch</span>`         — if uncertain/monitoring
+If any event is missing a status pill, the event disappears when users activate a status filter.
+Grep for `class="event-title"` lines that do NOT contain `status-pill` and add the correct pill.
+
+**D. Update the MDS Metrics Reference Modal note.**
+Find the div with text starting "All values are month-end closes unless noted."
+The sentence beginning "[MONTH YY] is partially confirmed: ... confirmed as of [DATE]"
+must be updated to reference the current update date and data state.
+Example: "Sep 2026 updated to 17 Sep 2026 (post-FOMC hike to 4.00%)..."
+
 ### 6a. Update existing milestone statuses
 For each event in the last 3 months with status-projected or status-watch:
 1. Search for whether the event has now occurred or been confirmed.
