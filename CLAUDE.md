@@ -18,7 +18,7 @@ The thesis holds that silver is in a structural multi-year bull market driven by
 | # | Driver | Status (as of Sep 17, 2026) | Dashboard categories |
 |---|---|---|---|
 | 1 | COMEX Registered & Eligible Drain | Active — ~96.4 moz registered (Sep 15, CME); below 100 moz warn threshold; Reg/Eligible ~0.40x; eligible ~237.9 moz | `price`, `macro` |
-| 2 | SHFE Critically Low Deliverable Stocks | Active — 1,407t (45.3 moz, Sep 11 confirmed); recovered from near-alarm ~868t lows but well below pre-2026 norms; sustained backwardation −12¢ spot–3M, 12+ months running | `price`, `macro` |
+| 2 | SHFE Critically Low Deliverable Stocks | Active — 1,407t (45.3 moz, Sep 11 confirmed); recovered from near-alarm ~868t lows but well below pre-2026 norms; backwardation narrowed to −8¢ spot–3M post-FOMC hike (was −12¢; 12+ months of backwardation) | `price`, `macro` |
 | 3 | RBI Silver Collateral Monetisation Policy | Operative since 1 Apr 2026; IIBX ~90t/month Aug; duty still 15%; India FX reserves record $785.7bn (Sep 12); USD/INR ~96.0 (Sep 17, rupee weakened post-FOMC hike) | `india`, `duty` |
 | 4 | ALMM-2 Solar Module Mandate | Operative since 1 Jun 2026; 9th revision Aug 21 adds TOPCon (Avaada); 28+ GW approved domestic cell capacity; TOPCon uses ~15% more silver/watt than PERC | `almm` |
 | 5 | Chinese VAT Rebate Removal on PV Exports | Operative since 1 Apr 2026; front-loading complete; export cost headwind structural | `macro` |
