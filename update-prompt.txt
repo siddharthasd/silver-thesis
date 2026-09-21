@@ -282,14 +282,64 @@ Monthly col-current update.
 - EFP — COMEX minus LBMA spot (¢/oz): from CME EFP daily data or LBMA. Negative = London at premium.
 
 ### 4e. Annual supply/demand balance table (ds-annual)
-Check for new annual data since last update.
-Primary sources:
-- Silver Institute World Silver Survey (silverinstitute.org) — published annually in April/May.
-  If WSS for the current year has been published since last update, replace the prior-year E column
-  with actuals and update the current-year E column with WSS forecasts.
-- GFMS/Metals Focus supplementary data; CPM Group Silver Yearbook.
-Update 2025E and 2026E rows with latest consensus figures if revised. Note: WSS is the authoritative
-source — prioritise it over all other estimates. Update the cumulative deficit milestone row.
+
+!! NEVER use your own estimates or prior-year extrapolations for this table. ALWAYS use WSS-published figures. !!
+
+**Step 1 — Determine which WSS is current.**
+WSS is published each April/May by Metals Focus for the Silver Institute (silverinstitute.org).
+- WSS YYYY covers: (YYYY−1) actuals AND YYYY forecasts.
+- Example: WSS 2026 (published Apr 2026) → 2025 actuals + 2026E forecasts.
+- Check silverinstitute.org/world-silver-survey for the latest edition. Note the publication date.
+
+**Step 2 — Fetch the WSS press release and headline table.**
+Primary fetch targets (in order of reliability):
+  1. silverinstitute.org press release page for the latest WSS (search "World Silver Survey [YYYY]")
+     URL pattern: silverinstitute.org/global-silver-investment-to-remain-strong-in-[YYYY]-against...
+  2. WSS press release PDF: edrsilver.com/site/assets/files/... or the Silver Institute direct PDF link
+     (search "World Silver Survey [YYYY] press release PDF")
+  3. Secondary summaries: miningvisuals.com, cruxinvestor.com, goldinvest.de, investingnews.com
+     Use these only to cross-check; never as the sole source.
+  4. PV Magazine (pv-magazine.com) for solar PV silver demand specifically.
+
+**Step 3 — Extract confirmed figures. Mark only these without ~.**
+Confirmed (no ~) = explicitly stated in the WSS press release or PDF with a specific Moz number:
+  - Total demand, total supply, market deficit (the three headline figures)
+  - Industrial fabrication total (usually stated: "X Moz, down/up Y%")
+  - Solar PV demand (usually stated separately)
+  - Mine production (usually stated)
+  - Recycled silver (usually stated)
+  - Physical bar & coin investment (usually stated)
+
+Estimated (mark ~) = inferred, back-calculated, or from secondary sources only:
+  - Electronics & electrical (sub-component of industrial)
+  - Brazing & other industrial (sub-component of industrial)
+  - Jewellery (may be stated; silverware often stated separately — combine as "Jewellery & silverware")
+  - ETF net demand (back-calculate as residual: total demand − all other confirmed demand rows)
+  - Net government & producer hedging (back-calculate as residual: total supply − mine − recycled)
+  - Country-level mine production breakdown (Mexico, China, Peru, Chile+other)
+
+!! The residual rows (ETF net demand, net hedging) will NOT match historical ranges if they are large. !!
+   This is expected when WSS comprehensive methodology includes above-ground stock drawdowns or
+   large producer forward-hedging. Document the back-calculation in the snote. Do NOT adjust other
+   rows to force the residuals to look "normal" — trust the confirmed totals.
+
+**Step 4 — Column management.**
+- When WSS YYYY is published: change prior "YYYYE" column header to "YYYY" (actuals; remove ~ from
+  confirmed cells in that column). Update the "YYYYE" column with new WSS forecasts.
+- Remove "col-est" CSS class from cells in the column that is now actuals (it was the old E column).
+- Keep "col-est" class on the new E column cells.
+- Update the snote to name the new WSS edition as the source.
+
+**Step 5 — Cumulative deficit milestone row.**
+Cumulative = sum of all annual deficits from 2021 onward (using confirmed WSS figures where available).
+Do NOT use WSS "comprehensive cumulative drawdown" figures (these include implied net investment flows
+from unallocated OTC accounts and are not directly comparable to the physical balance rows above).
+Update both "through [prior year]" and "through [current year E]" spans.
+
+**Step 6 — Validity check before saving.**
+For each column: (total supply) + (deficit) must equal (total demand).
+Example: 1,066.4 + 46.3 ≠ 1,112.6... actually 1,066.4 + 46.3 = 1,112.7 ≈ 1,112.6 (rounding OK).
+If off by more than 1 Moz: recheck your source; do NOT adjust figures to force the sum.
 
 ### 4f. COT & ETF Positioning table (ds-table, id="ds-positioning")
 Monthly col-current update.
