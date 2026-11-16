@@ -65,10 +65,12 @@ TABLE INTEGRITY RULES (added Nov 2026 — a dropped Sep cell shifted history one
   Registered ÷ Eligible = Reg/Eligible cross-check. Exit code 1 = problems.) It does not yet cover the UST and CB
   tables — for those, count <td> per data row against <th> manually. Also eyeball the header month list against the
   first three data cells of each row after adding a column.
-  KNOWN OPEN ISSUE (Nov 2026): 7 MDS rows (RFI, USD/JPY, JGB 10Y, UST 30Y/10Y/3Y, Gold net premium) have 23 cells
-  vs 24; one month between Mar and Feb 2026 is missing so Feb/Jan and older months may sit one column off. The
-  check_tables.py run reports this as FAIL for 'mds' until repaired — repair it first (recover the missing month
-  from git history or a primary source; do not invent it).
+  RESOLVED (Nov 16 2026): 7 MDS rows were missing the Feb 26 cell; restored, and check_tables.py passes. Official
+  month-end UST 3Y/10Y/30Y (Jan–Aug 26) are now in the MDS from home.treasury.gov (TextView?type=daily_treasury_yield_curve
+  &field_tdr_date_value_month=YYYYMM) — a fetchable primary source for any month; use it for H.15 months the Fed page
+  hides. REMAINING DATA RISK: USD/JPY and JGB 10Y history (and Gold net premium) were not re-verified and look off vs
+  official month-ends (e.g. USD/JPY Mar 26 official ~158.7 vs 154.3 shown; JGB Jan 26 ~2.24 vs 1.92 shown). Verify
+  against H.10 (Data Download Program) and MOF jgbcm.csv before relying on them.
 - Cross-check overlapping rows: MDS and DS must agree month-for-month on COMEX Registered, SHFE, Reg/OI.
   Reg/Eligible must equal Registered ÷ Eligible (±0.02) in every column; if not, a cell has shifted.
 - Never delete a month's cell because its data is unavailable: use "~&#8212;" as a placeholder.
