@@ -18,6 +18,42 @@ CONVENTIONS:
 - For "last trading day" references: if the target date falls on a weekend, use the prior Friday.
 - Today's date is [INSERT DATE]. The reference date for this update is [INSERT LAST TRADING DAY].
 
+SOURCE & DATA-QUALITY RULES (added Nov 2026 after the Nov 16 run):
+- Fed H.15 / H.10 publish with a ~1 trading-day lag. If the reference date is not yet on the release,
+  use the latest published date, say so in the MDS note, and do NOT mark ~ (it is still official).
+- Veterans Day (Nov 11) and other bond-market holidays have no H.15 values — never fabricate them.
+- Daily gold/silver closes: Kitco (kitco.com/news) and usagold.com daily reports are usable for spot,
+  but are NOT CME settlements — keep ~. usagold.com returns HTTP 403 to WebFetch; use WebSearch snippets.
+- COMEX inventories: goldsilver.ai/metal-prices/comex-silver (registered/eligible, dated). metalcharts.org
+  is an acceptable cross-check only.
+- COT — TWO DIFFERENT SERIES, never mix them:
+    (1) CFTC LEGACY non-commercial net (cftc.gov/dea/futures/deacmxlf.htm, silver block code 084691):
+        long minus short, excludes spreading. Official.
+    (2) CFTC DISAGGREGATED managed-money net (the series the dashboard's "COT managed money" row and
+        thresholds use: <5k capitulation, >45k crowded). cftc.gov's disaggregated page (deacmxsf) may
+        return legacy format; cross-check with metalcharts.org/cot/silver or tradingster.com/cot
+        (also lists producer/merchant and swap-dealer nets). Always state which series and the report date.
+  The report is "as of Tuesday", released Friday 3:30pm ET — but after the Oct–Nov 2026 shutdown, releases
+  ran late (Nov 10 data scheduled Nov 16). If the newest week isn't out, use the last confirmed week and say so.
+  NEVER carry forward an older estimate (e.g. "~8,000") over a newer confirmed print — replace it.
+  COT reading checklist: net managed-money change w/w, whether price and positioning moved together
+  (capitulation vs. rebuilding), OI change, commercial/swap net (the other side), and short-covering risk.
+- Silver Institute / Metals Focus: besides the April World Silver Survey there is a mid-November INTERIM
+  review (published ~Nov 12 2026). Search "Silver Institute interim review" / "Metals Focus silver interim"
+  and read silverinstitute.org first; Kitco and FXStreet summarise. It reports the balance BEFORE fund flows
+  and "market balance less ETPs" — record both, never one alone.
+- Private credit: the big-four BDC Q3 10-Qs (ARCC, FSK, OBDC, GBDC) land ~Nov 5–15; fetch them from SEC EDGAR
+  (sec.gov/cgi-bin/browse-edgar). If unavailable, carry forward with ~ and say so; do not infer worsening from
+  headlines alone. Qualitative evidence (Goldman credit notes, UBS BDC software exposure, KBDC/BBDC prints)
+  goes in a Watch timeline event, not the numeric rows.
+- Treasury auctions: results at treasurydirect.gov/auctions/announcements-data-results/; trade-press mirrors
+  (helious.io/auctions, thevaultreport.com/treasury-auctions, investinglive.com) give bid-to-cover, tail,
+  indirect and dealer shares. Cross-check at least two sources; the tail is vs when-issued yield.
+- Equity/tech context (Nov 2026): Kitco PM reports give S&P/Nasdaq/Nvidia moves and Fed-hike odds
+  (CME FedWatch). Treat user-supplied market narratives ("Nvidia debacle", "private credit worse") as
+  hypotheses to verify, and report where evidence is thin.
+- If a requested fact cannot be sourced, say so in the final report rather than filling the cell.
+
 ---
 
 ## PHASE 0 — PREPARATION
@@ -78,7 +114,7 @@ Read the inline <!-- METRIC: Fed Funds Rate --> comment for full sourcing detail
 Source: FOMC press release (federalreserve.gov/monetarypolicy/openmarket.htm) — issued same day as each decision.
 Report the UPPER BOUND of the FOMC target range (e.g., 3.50–3.75% → enter 3.75). Do NOT use EFFR.
 No ~ if sourced from a confirmed FOMC press release. Carry forward UNCHANGED between meetings.
-KNOWN ANCHORS: Jan 2025 = 4.50 | Jan 2026 = 3.75 (after 3 cuts: May/Sep 2025, Jan 2026) | Sep 2026 = 4.00 (hike Sep 17).
+KNOWN ANCHORS: Jan 2025 = 4.50 | Jan 2026 = 3.75 (after 3 cuts: May/Sep 2025, Jan 2026) | Sep 2026 = 4.00 (hike Sep 17) | Oct 28 2026 = hold 3.75–4.00 (10–2) | next FOMC Dec 8–9 (hike ~89% priced Nov 13).
 Dot-plot after Sep 2026 hike: one more hike this year → ~4.25% by year-end.
 WARN ≥ 4.50%. ALARM ≥ 5.00%.
 !! NEVER interpolate between FOMC meetings — rate is a step function, not a ramp !!
@@ -283,6 +319,11 @@ Monthly col-current update.
 
 ### 4e. Annual supply/demand balance table (ds-annual)
 
+NOTE (Nov 2026): the Metals Focus/Silver Institute INTERIM review (Nov 12) revised 2026 to a 35 Moz deficit
+before funds (WSS April: 46.3) and ~+10 Moz surplus after expected 45 Moz ETP outflows. Its full tables were
+not retrieved, so the 2026E column still shows the April WSS base with the revision documented in the snote.
+When the full interim tables are available (silverinstitute.org), restate the 2026E column and the scenario table.
+
 !! NEVER use your own estimates or prior-year extrapolations for this table. ALWAYS use WSS-published figures. !!
 
 **Step 1 — Determine which WSS is current.**
@@ -343,8 +384,8 @@ If off by more than 1 Moz: recheck your source; do NOT adjust figures to force t
 
 ### 4f. COT & ETF Positioning table (ds-table, id="ds-positioning")
 Monthly col-current update.
-- COT managed money net long (k contracts): CFTC COT report (cftc.gov/MarketReports/CommitmentsofTraders).
-  Use most recent Friday snapshot. lo-v class if <5k (capitulation); hi-v if >45k (crowded).
+- COT managed money net long (k contracts): DISAGGREGATED managed-money series — see SOURCE & DATA-QUALITY
+  RULES above (cftc.gov legacy page is NOT this series). Use the most recent confirmed report week. lo-v class if <5k (capitulation); hi-v if >45k (crowded).
 - COMEX silver open interest (k contracts): CME Group daily bulletin.
 - Total silver ETF holdings (Moz): iShares SLV + Sprott PSLV + Aberdeen ETFS combined.
   Source: ETF provider daily holdings pages. hi-v if >720 Moz (near Jan 2026 rally peak).
@@ -467,6 +508,8 @@ Search queries to run (one at a time):
 - "China PBoC gold reserves [month year]"
 - "Silver price [month year] technical level"
 - "Private credit BDC nonaccrual [month year]"
+- "Nvidia tech stock selloff [month year] S&P Nasdaq"  /  "Goldman credit spreads AI debt [month year]"
+- "Silver Institute interim review [month year]"  /  "Metals Focus silver [month year]"
 - "US CPI PCE inflation [month year]"
 - "Treasury buyback program [month year]"
 
