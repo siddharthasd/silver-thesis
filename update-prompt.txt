@@ -54,6 +54,38 @@ SOURCE & DATA-QUALITY RULES (added Nov 2026 after the Nov 16 run):
   hypotheses to verify, and report where evidence is thin.
 - If a requested fact cannot be sourced, say so in the final report rather than filling the cell.
 
+TABLE INTEGRITY RULES (added Nov 2026 — a dropped Sep cell shifted history one month in 5 DS rows):
+- NEW MONTH = INSERT, NEVER OVERWRITE. Add a new first data cell and leave every existing cell in place.
+  The old col-current cell becomes the previous month's cell and keeps its value (drop only its col-current class).
+  If a value looks wrong, fix it in place; do not reuse the cell for the new month.
+- Every <table> with month columns must keep identical cell counts per row. After ANY edit to a month table
+  (MDS, UST, DS inventory/curve/positioning/premiums/demand, CB), run the validator and fix every FAIL before committing:
+    python -I check_tables.py
+  (check_tables.py in the project root: per-row <td> count vs header count for the DS tables and MDS, plus the
+  Registered ÷ Eligible = Reg/Eligible cross-check. Exit code 1 = problems.) It does not yet cover the UST and CB
+  tables — for those, count <td> per data row against <th> manually. Also eyeball the header month list against the
+  first three data cells of each row after adding a column.
+  KNOWN OPEN ISSUE (Nov 2026): 7 MDS rows (RFI, USD/JPY, JGB 10Y, UST 30Y/10Y/3Y, Gold net premium) have 23 cells
+  vs 24; one month between Mar and Feb 2026 is missing so Feb/Jan and older months may sit one column off. The
+  check_tables.py run reports this as FAIL for 'mds' until repaired — repair it first (recover the missing month
+  from git history or a primary source; do not invent it).
+- Cross-check overlapping rows: MDS and DS must agree month-for-month on COMEX Registered, SHFE, Reg/OI.
+  Reg/Eligible must equal Registered ÷ Eligible (±0.02) in every column; if not, a cell has shifted.
+- Never delete a month's cell because its data is unavailable: use "~&#8212;" as a placeholder.
+- Use git history to recover lost values: git show <commit>:silver-thesis-key-milestones.html.
+
+COLOUR RULES FOR DS TABLES (hi-v = red, mid-v = amber, lo-v = green, none = OK). Apply to EVERY month cell, not just
+the current one, using the thresholds printed in each row label — never colour by hand or by feel:
+- COMEX Registered: <120 moz mid-v; <80 hi-v.     - Reg/Eligible: <0.40x mid-v.
+- Reg/OI coverage: <0.35x mid-v; <0.25x hi-v.     - SHFE deliverable: <35 moz mid-v; <28 moz hi-v.
+- Lease rates: >1.5% mid-v; >3% hi-v.              - Spot–3M backwardation <0: hi-v (mild -1 to -15¢: mid-v).
+- COT managed money: <5k lo-v (capitulation = contrarian buy); >45k hi-v.
+Stage tiles in the Physical Stress Signal chain follow the WORST dot inside them (ok → watch → warn). A dot may
+not be green if its value is a carry-forward more than ~4 weeks old, was restated, or has no new print: set it to
+watch and label it "(stale)" / "(carried)". Re-evaluate all dots and the stage badge every update (Phase 4b).
+If a series is restated or its basis changes (e.g. SHFE 868t → 1,407t, Reg/OI formula), recalibrate the thresholds or
+flag the series break in the row note — never leave thresholds set on the old basis.
+
 ---
 
 ## PHASE 0 — PREPARATION
@@ -293,6 +325,7 @@ but in separate HTML cells — update BOTH when inventory data changes.
 Update the ds-signal-asof div: change the date to [INSERT LAST TRADING DAY].
 
 ### 4b. Physical Stress Signal chain (ds-chain)
+(Follow TABLE INTEGRITY RULES and COLOUR RULES above. Re-grade every dot and every stage badge each update.)
 Each ds-mrow shows a current value in ds-mval and a signal dot (ds-mdot class: ok / watch / warn).
 Update the ds-mval text for COMEX Registered, Reg/OI coverage, LBMA vault holdings, and SHFE
 deliverable to match Phase 1 confirmed values. Then update each ds-mdot class:
@@ -402,6 +435,8 @@ Monthly col-current update.
 - IIBX channel (tonnes): iibx.co.in monthly volume data.
 - Non-IIBX channel: India total minus IIBX.
 
+Before committing: run the cell-count check from TABLE INTEGRITY RULES on all DS tables and confirm the
+Registered ÷ Eligible = Reg/Eligible cross-check passes for the new column and the previous two months.
 Commit and push: "data([MMM-YY]): update Silver Demand Supply tab"
 
 ---
